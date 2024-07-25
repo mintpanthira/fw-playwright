@@ -3,4 +3,4 @@
 - npm install @playwright/test
 
 # run playwright
-- npx playwright test e2e-4-round-payment.spec.ts --ui
+- npx playwright test <fiilename.spec.ts> --ui
