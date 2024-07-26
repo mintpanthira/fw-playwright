@@ -17,10 +17,6 @@ async function logout(page) {
     await page.click('[data-selenium="navigation-bar.button.user-menu"]', { force: true });
     await logoutButton.waitFor({ state: 'visible' });
     await logoutButton.click({ force: true });
-    // if (await logoutButton.count() > 0) {
-    //     await logoutButton.scrollIntoViewIfNeeded();
-    //     await logoutButton.click({ force: true });
-    // }
 }
 
 async function goToChatPage(page, name) {
@@ -59,14 +55,7 @@ async function dateLocator(page, number) {
 
     await page.locator(`input[name="startDate[${number}]"]`).click({ force: true });
     await page.locator('.day-range-picker__float-calendar').waitFor({state: 'attached'})
-
-    
-    // await page.getByLabel(`Choose ${todayFormatted} as your check-in date. It’s available.`).click({ force: true });
     await page.getByLabel(`Choose ${todayFormatted} as your check-in date. It’s available.`).dispatchEvent("click");
-    // await locator.dispatchEvent('click');
-
-
-    // await page.getByLabel(`Choose ${tomorrowFormatted}`).click({ force: true });
     await page.getByLabel(`Choose ${tomorrowFormatted}`).dispatchEvent("click")
   
     const stDateValue = await page.locator(`input[name="startDate[${number}]"]`).inputValue();
@@ -74,14 +63,6 @@ async function dateLocator(page, number) {
 
     console.log(stDateValue)
     console.log(endDateValue)
-    // if (!endDateValue) {
-    //     await page.locator(`input[name="endDate[${number}]"]`).click({ force: true });
-    //     await page.locator('.day-range-picker__float-calendar').waitFor({state: 'attached'})
-    //     await page.getByLabel(`Choose ${tomorrowFormatted}`).click({ force: true });
-    // }
-
-    // await expect(page.locator(`input[name="startDate[${number}]"]`)).toHaveValue(expectToday)
-    // await expect(page.locator(`input[name="endDate[${number}]"]`)).toHaveValue(expectTomorrow)
 }
 
 async function inputFormDetail(page, addRound) {
