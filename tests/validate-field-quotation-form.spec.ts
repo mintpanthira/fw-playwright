@@ -9,17 +9,19 @@ import {
 import {countError} from '../resource/validate-utils'
 import {usernameBuyer, usernameFreelancer, password} from '../resource/test_data/user.json'
 
+const errorDetail = "กรุณากรอกข้อมูล";
+const errorDate = "กรุณาระบุวันที่ให้ถูกต้อง";
+
 test.describe('validate-field-quatation-form', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('https://staging.fastwork.co/');
         await page.locator('._cs-pt > .fal').click();
         await acceptCookie(page)
     });
-    test('Validate for quotation', async ({ page }) => {
-        await login(page, usernameBuyer, password);
-        //await buyerChatToFreelancer(page);
-        const errorDetail = "กรุณากรอกข้อมูล";
+    test('Validate Quotation', async ({ page }) => {
+        test.slow()
 
+        await login(page, usernameBuyer, password);     
         const productName = page.locator('.search-page-card-list .title');
         await page.click('[class="layout-home"]')
         await page.getByRole('main').getByPlaceholder('ค้นหาฟรีแลนซ์').click();
@@ -45,14 +47,11 @@ test.describe('validate-field-quatation-form', () => {
         await productPage.getByPlaceholder('พิมพ์ข้อความที่นี่').fill('เปลี่ยนเป็น 4 งวด');
         await productPage.getByPlaceholder('พิมพ์ข้อความที่นี่').press('Enter');
         await logout(productPage);
-        //await page.waitForTimeout(10000)
         
-        //Freelancer
+        //Freelancer create quotation (validate)
         await login(productPage, usernameFreelancer, password);
-        //await page.waitForTimeout(10000)
         await goToChatPage(productPage, 'qacbuyer');
         await disablePhoneModal(productPage);
-        await productPage.waitForLoadState('networkidle');
         await goToChatPage(productPage, 'qacbuyer');
         await disablePhoneModal(productPage);
         await productPage.getByText('เสนอราคาแบบแบ่งชำระ').click({ force: true });
@@ -66,12 +65,10 @@ test.describe('validate-field-quatation-form', () => {
         await productPage.getByRole('button', { name: 'ถัดไป', exact: true }).click({ force: true });
         await productPage.locator('.progress-step .active').nth(1).waitFor({state: 'attached'});
         await productPage.getByRole('button', { name: 'ถัดไป', exact: true }).click({ force: true });
-        // await page.waitForSelector('small:has-text("กรุณากรอกข้อมูล")');
         await productPage.locator('small:has-text("กรุณากรอกข้อมูล")').nth(0).waitFor({state: 'visible'});
-        // await page.locator('small:has-text("กรุณากรอกข้อมูล")').nth(0)
-        await countError(productPage,"กรุณากรอกข้อมูล");
-        await countError(productPage,"กรุณาระบุวันที่ให้ถูกต้อง");
-        await inputFormDetail(productPage);
+        await countError(productPage,errorDetail);
+        await countError(productPage,errorDate);
+        await inputFormDetail(productPage,0);
         await productPage.getByRole('button', { name: 'ถัดไป', exact: true }).click();
         const confirmButton = productPage.getByRole('button', { name: 'ยืนยัน', exact: true });
         await expect(confirmButton).toBeDisabled();

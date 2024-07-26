@@ -46,21 +46,52 @@ async function disablePhoneModal(page) {
 }
 
 async function dateLocator(page, number) {
+    console.log(number)
     const today = DateTime.now();
     const tomorrow = today.plus({ days: 1 });
     const todayFormatted = today.toFormat('cccc, MMMM d, yyyy');
     const tomorrowFormatted = tomorrow.toFormat('cccc, MMMM d, yyyy');
+    console.log(todayFormatted)
+    console.log(tomorrowFormatted)
+
+    const expectToday = today.toFormat('dd/MM/yyyy');
+    const expectTomorrow = tomorrow.toFormat('dd/MM/yyyy');
 
     await page.locator(`input[name="startDate[${number}]"]`).click({ force: true });
-    await page.getByLabel(`Choose ${todayFormatted}`).click({ force: true });
-    const startDateValue = await page.locator(`input[name="startDate\\[${number}\\]"]`).inputValue();
-    if (!startDateValue) {
-        throw new Error('Start date not set');
-    }
-    await page.getByLabel(`Choose ${tomorrowFormatted}`).click({ force: true });
+    await page.locator('.day-range-picker__float-calendar').waitFor({state: 'attached'})
+
+    
+    // await page.getByLabel(`Choose ${todayFormatted} as your check-in date. It’s available.`).click({ force: true });
+    await page.getByLabel(`Choose ${todayFormatted} as your check-in date. It’s available.`).dispatchEvent("click");
+    // await locator.dispatchEvent('click');
+
+
+    // await page.getByLabel(`Choose ${tomorrowFormatted}`).click({ force: true });
+    await page.getByLabel(`Choose ${tomorrowFormatted}`).dispatchEvent("click")
+  
+    const stDateValue = await page.locator(`input[name="startDate[${number}]"]`).inputValue();
+    const endDateValue = await page.locator(`input[name="endDate[${number}]"]`).inputValue();
+
+    console.log(stDateValue)
+    console.log(endDateValue)
+    // if (!endDateValue) {
+    //     await page.locator(`input[name="endDate[${number}]"]`).click({ force: true });
+    //     await page.locator('.day-range-picker__float-calendar').waitFor({state: 'attached'})
+    //     await page.getByLabel(`Choose ${tomorrowFormatted}`).click({ force: true });
+    // }
+
+    // await expect(page.locator(`input[name="startDate[${number}]"]`)).toHaveValue(expectToday)
+    // await expect(page.locator(`input[name="endDate[${number}]"]`)).toHaveValue(expectTomorrow)
 }
 
-async function inputFormDetail(page) {
+async function inputFormDetail(page, addRound) {
+    
+    const plusBut = page.getByRole('button', { name: 'ใบเสนอราคา Order ID :' }).getByRole('button').nth(1);
+    if(addRound != 0){
+        for(let i = 0; i< addRound; i++){
+            await plusBut.click({ force: true });
+        }
+    }
     const price = page.locator('label:has-text("ราคางาน")');
     const countPrice = await price.count();
     for (let i = 0; i < countPrice; i++) {
